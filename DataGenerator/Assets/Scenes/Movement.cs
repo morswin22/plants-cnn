@@ -40,8 +40,8 @@ public class Movement : MonoBehaviour
     if (cameras.Length != 2)
       FindCameras();
 
-    Vector3 newPosition = getRandomPosition();
-    Vector3 newLookAt = getRandomPosition();
+    var newPosition = getRandomPosition();
+    var newLookAt = getRandomPosition();
     newLookAt.y = 1.0f;
 
     foreach (GameObject camera in cameras)

@@ -14,6 +14,8 @@ public class Setup : MonoBehaviour
     {
         mainCamera = new GameObject();
         mainCamera.AddComponent<Camera>();
+        // mainCamera.AddComponent<Movement>();
+        // mainCamera.AddComponent<Render>();
         mainCamera.transform.position = new Vector3(0, 10.0f, 20.0f);
         mainCamera.transform.Rotate(10.0f, 180.0f, 0.0f, Space.Self);
         mainCamera.name = "Main Camera";
@@ -35,6 +37,8 @@ public class Setup : MonoBehaviour
         ground.transform.localScale = new Vector3(10.0f, 1.0f, 10.0f);
         ground.name = "Ground";
         ground.GetComponent<MeshRenderer>().material = groundMaterial;
+        ground.AddComponent<Forestation>();
+
     }
 
     void Update()

@@ -32,7 +32,7 @@ foreach (var file in Directory.GetFiles(inputPath, "*", SearchOption.AllDirector
             File.WriteAllText(Path.Combine(outputPath, innerPath + ".mtl"), text);
             break;
         default:
-            File.Copy(item, Path.Combine(outputPath, innerPath + "." + extension));
+            File.Copy(item, Path.Combine(outputPath, innerPath + "." + extension), true);
             break;
     }
 }

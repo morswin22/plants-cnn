@@ -23,7 +23,7 @@ public class Setup : MonoBehaviour
 
         directionalLight = new GameObject();
         directionalLight.AddComponent<Light>();
-        directionalLight.name = "Directional Light";
+        directionalLight.name = "Sun";
         directionalLight.GetComponent<Light>().type = LightType.Directional;
         directionalLight.GetComponent<Light>().shadows = LightShadows.Soft;
         directionalLight.GetComponent<Light>().color = Color.white;
@@ -31,6 +31,7 @@ public class Setup : MonoBehaviour
         directionalLight.GetComponent<Light>().colorTemperature = 5900;
         directionalLight.transform.position = new Vector3(0, 10.0f, 0.0f);
         directionalLight.transform.Rotate(lightDir.x, lightDir.y, lightDir.z, Space.Self);
+        directionalLight.AddComponent<Entropedia.Sun>();
 
         groundMaterial = Resources.Load("ForestFloor/ForestFloor") as Material;
         ground = GameObject.CreatePrimitive(PrimitiveType.Plane);

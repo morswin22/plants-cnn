@@ -4,22 +4,30 @@ using UnityEngine;
 
 public class Setup : MonoBehaviour
 {
-    GameObject mainCamera;
+    public GameObject mainCamera;
+    public GameObject textureCamera;
     public GameObject directionalLight;
-    Vector3 lightDir = new Vector3(10.0f, 10.0f, 10.0f);
     public GameObject ground;
     public Material groundMaterial;
+
+    Vector2Int textureCameraSize = new Vector2Int(800, 600);
 
     void Start()
     {
         mainCamera = new GameObject();
         mainCamera.AddComponent<Camera>();
-        // mainCamera.AddComponent<Movement>();
-        // mainCamera.AddComponent<Render>();
         mainCamera.transform.position = new Vector3(0, 10.0f, 20.0f);
         mainCamera.transform.Rotate(10.0f, 180.0f, 0.0f, Space.Self);
         mainCamera.name = "Main Camera";
         mainCamera.tag = "Camera";
+
+        textureCamera = new GameObject();
+        textureCamera.AddComponent<Camera>();
+        textureCamera.transform.position = new Vector3(0, 10.0f, 20.0f);
+        textureCamera.transform.Rotate(10.0f, 180.0f, 0.0f, Space.Self);
+        textureCamera.name = "Texture Camera";
+        textureCamera.tag = "Camera";
+        textureCamera.GetComponent<Camera>().targetTexture =  new RenderTexture(textureCameraSize.x, textureCameraSize.y, 24);
 
         directionalLight = new GameObject();
         directionalLight.AddComponent<Light>();
@@ -30,7 +38,7 @@ public class Setup : MonoBehaviour
         directionalLight.GetComponent<Light>().useColorTemperature = true;
         directionalLight.GetComponent<Light>().colorTemperature = 5900;
         directionalLight.transform.position = new Vector3(0, 10.0f, 0.0f);
-        directionalLight.transform.Rotate(lightDir.x, lightDir.y, lightDir.z, Space.Self);
+        directionalLight.transform.Rotate(10.0f, 10.0f, 10.0f, Space.Self);
         directionalLight.AddComponent<Entropedia.Sun>();
 
         groundMaterial = Resources.Load("ForestFloor/ForestFloor") as Material;

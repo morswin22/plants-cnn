@@ -134,7 +134,6 @@ GameObject:
   - component: {fileID: 1446162472}
   - component: {fileID: 1446162474}
   - component: {fileID: 1446162471}
-  - component: {fileID: 1446162473}
   m_Layer: 0
   m_Name: Main
   m_TagString: Untagged
@@ -154,7 +153,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8080eb8b95719504eae434ce090b089f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ScreenshotsPerSecond: 5
+  screenshotsPerSecond: 3
 --- !u!4 &1446162472
 Transform:
   m_ObjectHideFlags: 0
@@ -169,20 +168,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1446162473
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1446162470}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fec3b2abc435e09488d35543e2653fcf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  cameras: []
-  selectedPreset: 1
 --- !u!114 &1446162474
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -195,6 +180,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f298beee7c983842b768535fc7c5093, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mainCamera: {fileID: 0}
+  textureCamera: {fileID: 0}
   directionalLight: {fileID: 0}
   ground: {fileID: 0}
   groundMaterial: {fileID: 0}

@@ -9,9 +9,13 @@ public class Forestation : MonoBehaviour
     GameObject sp;
     GameObject ground;
     List<Tree> trees = new List<Tree>();
+    List<GameObject> placedTrees = new List<GameObject>();
     Vector3 maximumCoordinates;
     Vector3 minimumCoordinates;
     public float minimumDistanceFromTheEdge = 5;
+    public float treesAreaScale = 1f/8f;
+    public float treesSizeScale = 1f/8f;
+    public float treesSinkAmount = -1.0f;
 
     void GetEdgesOfTheWorld()
     {
@@ -22,14 +26,14 @@ public class Forestation : MonoBehaviour
 
         // vector with maximum coordinates  
         maximumCoordinates = new Vector3(
-            posGround.x + groundScale.x * groundSize.x / 8,
-            posGround.y + groundScale.y * groundSize.y / 8, // 0
-            posGround.z + groundScale.z * groundSize.z / 8);
+            posGround.x + groundScale.x * groundSize.x * treesAreaScale,
+            posGround.y + groundScale.y * groundSize.y * treesAreaScale - treesSizeScale * treesSinkAmount * 1.25f,
+            posGround.z + groundScale.z * groundSize.z * treesAreaScale);
 
         minimumCoordinates = new Vector3(
-            posGround.x - groundScale.x * groundSize.x / 8,
-            posGround.y - groundScale.y * groundSize.y / 8, // 0
-            posGround.z - groundScale.z * groundSize.z / 8);
+            posGround.x - groundScale.x * groundSize.x * treesAreaScale,
+            posGround.y + groundScale.y * groundSize.y * treesAreaScale - treesSizeScale * treesSinkAmount * 0.75f,
+            posGround.z - groundScale.z * groundSize.z * treesAreaScale);
 
         // I've assumed that the Ground object isn't rotated
         // In case of rotating it, we'll be forced to do some fancy maths
@@ -42,13 +46,14 @@ public class Forestation : MonoBehaviour
     {
         // TODO: think how to select .obj files 
         var path = Application.dataPath + "/Resources/ForestObjects";
-        var tree = new Tree(path, "EU43_5");
+        var tree = new Tree(path, "EU43_5", treesSizeScale);
         tree.prefab.name = $"Tree_{trees.Count + 1}";
 
         tree.prefab.transform.position = new Vector3(
             Random.Range(minimumCoordinates.x + minimumDistanceFromTheEdge, maximumCoordinates.x - minimumDistanceFromTheEdge),
-            Random.Range(minimumCoordinates.y, maximumCoordinates.y) + 0.5f,
+            Random.Range(minimumCoordinates.y, maximumCoordinates.y),
             Random.Range(minimumCoordinates.z + minimumDistanceFromTheEdge, maximumCoordinates.z - minimumDistanceFromTheEdge));
+        tree.prefab.transform.Rotate(0f, Random.Range(0f, 360f), 0f, Space.Self);
 
         // .tif extension is a problem - to import properly with textures,
         // I've converted every .tif file to .png and I've edited .mtl file
@@ -60,13 +65,8 @@ public class Forestation : MonoBehaviour
         // Load all trees from the names list
         foreach (var name in names)
         {
-            var tree = new Tree(path, name);
+            var tree = new Tree(path, name, treesSizeScale);
             tree.prefab.transform.position = new Vector3(0.0f, -tree.size.y, 0.0f);
-            tree.prefab.transform.localScale = new Vector3(
-                tree.prefab.transform.localScale.x / 8,
-                tree.prefab.transform.localScale.y / 8,
-                tree.prefab.transform.localScale.z / 8
-            );
             trees.Add(tree);
         }
     }
@@ -79,8 +79,10 @@ public class Forestation : MonoBehaviour
             var tree = Instantiate(trees[Random.Range(0, trees.Count)].prefab);
             tree.transform.position = new Vector3(
                 Random.Range(minimumCoordinates.x + minimumDistanceFromTheEdge, maximumCoordinates.x - minimumDistanceFromTheEdge),
-                Random.Range(minimumCoordinates.y, maximumCoordinates.y) + 0.5f,
+                Random.Range(minimumCoordinates.y, maximumCoordinates.y),
                 Random.Range(minimumCoordinates.z + minimumDistanceFromTheEdge, maximumCoordinates.z - minimumDistanceFromTheEdge));
+            tree.transform.Rotate(0f, Random.Range(0f, 360f), 0f, Space.Self);
+            placedTrees.Add(tree);
         }
     }
 
@@ -96,9 +98,9 @@ public class Forestation : MonoBehaviour
         foreach (var tree in trees)
         {
             if (tree.size.x > maxSize.x)
-                maxSize.x = tree.size.x / 8;
+                maxSize.x = tree.size.x;
             if (tree.size.z > maxSize.z)
-                maxSize.z = tree.size.z / 8;
+                maxSize.z = tree.size.z;
         }
         // Calculate step and offset
         float xStep = maxSize.x + gap;
@@ -113,8 +115,49 @@ public class Forestation : MonoBehaviour
                 var tree = Instantiate(trees[Random.Range(0, trees.Count)].prefab);
                 tree.transform.position = new Vector3(
                     x + Random.Range(-maxRandomOffset, maxRandomOffset),
-                    Random.Range(minimumCoordinates.y, maximumCoordinates.y) + 0.5f,
+                    Random.Range(minimumCoordinates.y, maximumCoordinates.y),
                     z + Random.Range(-maxRandomOffset, maxRandomOffset));
+                tree.transform.localRotation = Quaternion.Euler(-90f, 0, Random.Range(0f, 360f));
+                placedTrees.Add(tree);
+            }
+        }
+    }
+
+    void PlaceTreesGrid(int cols, int rows, float maxRandomOffset)
+    {
+        // Constrain parameters
+        if (cols < 1)
+            cols = 1;
+        if (rows < 1)
+            rows = 1;
+        if (maxRandomOffset < 0.0f)
+            maxRandomOffset = 0.0f;
+        // Find max size of trees from Tree.size
+        Vector3 maxSize = new Vector3();
+        foreach (var tree in trees)
+        {
+            if (tree.size.x > maxSize.x)
+                maxSize.x = tree.size.x;
+            if (tree.size.z > maxSize.z)
+                maxSize.z = tree.size.z;
+        }
+        // Calculate step and offset
+        float xStep = (maximumCoordinates.x - minimumCoordinates.x - 2 * minimumDistanceFromTheEdge) / cols;
+        float zStep = (maximumCoordinates.z - minimumCoordinates.z - 2 * minimumDistanceFromTheEdge) / rows;
+        float xOffset = (((maximumCoordinates.x - minimumCoordinates.x - 2 * minimumDistanceFromTheEdge) / xStep) % 1) * xStep * 0.5f;
+        float zOffset = (((maximumCoordinates.z - minimumCoordinates.z - 2 * minimumDistanceFromTheEdge) / zStep) % 1) * zStep * 0.5f;
+        // Place trees in a grid
+        for (float x = minimumCoordinates.x + minimumDistanceFromTheEdge + xOffset; x <= maximumCoordinates.x - minimumDistanceFromTheEdge; x += xStep)
+        {
+            for (float z = minimumCoordinates.z + minimumDistanceFromTheEdge + zOffset; z <= maximumCoordinates.z - minimumDistanceFromTheEdge; z += zStep)
+            {
+                var tree = Instantiate(trees[Random.Range(0, trees.Count)].prefab);
+                tree.transform.position = new Vector3(
+                    x + Random.Range(-maxRandomOffset, maxRandomOffset),
+                    Random.Range(minimumCoordinates.y, maximumCoordinates.y),
+                    z + Random.Range(-maxRandomOffset, maxRandomOffset));
+                tree.transform.localRotation = Quaternion.Euler(-90f, 0, Random.Range(0f, 360f));
+                placedTrees.Add(tree);
             }
         }
     }
@@ -144,9 +187,29 @@ public class Forestation : MonoBehaviour
             var tree = Instantiate(trees[Random.Range(0, trees.Count)].prefab);
             tree.transform.position = new Vector3(
                 minimumCoordinates.x + minimumDistanceFromTheEdge + point.x,
-                Random.Range(minimumCoordinates.y, maximumCoordinates.y) + 0.5f,
+                Random.Range(minimumCoordinates.y, maximumCoordinates.y),
                 minimumCoordinates.z + minimumDistanceFromTheEdge + point.y);
+            tree.transform.Rotate(0f, Random.Range(0f, 360f), 0f, Space.Self);
+            placedTrees.Add(tree);
         }
+    }
+
+    void RemovePlacedTrees()
+    {
+        foreach (var tree in placedTrees)
+        {
+            Destroy(tree);
+        }
+        placedTrees.Clear();
+    }
+
+    void RemoveLoadedTrees()
+    {
+        foreach (var tree in trees)
+        {
+            Destroy(tree.prefab);
+        }
+        trees.Clear();
     }
 
     // Start is called before the first frame update
@@ -156,7 +219,8 @@ public class Forestation : MonoBehaviour
         // LoadSingleTree();
         LoadTrees(Application.dataPath + "/Resources/ForestObjects", new List<string> { "EU43_5" });
         // PlaceTreesRandom(10);
-        PlaceTreesGrid(2f, 0.15f);
+        // PlaceTreesGrid(2f, 0.15f);
+        PlaceTreesGrid(3, 9, 0.15f);
         // PlaceTreesPoisson(25.0f, 5);
     }
 

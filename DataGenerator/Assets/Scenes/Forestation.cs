@@ -22,14 +22,14 @@ public class Forestation : MonoBehaviour
 
         // vector with maximum coordinates  
         maximumCoordinates = new Vector3(
-            posGround.x + groundScale.x * groundSize.x / 2,
-            posGround.y + groundScale.y * groundSize.y / 2, // 0
-            posGround.z + groundScale.z * groundSize.z / 2);
+            posGround.x + groundScale.x * groundSize.x / 8,
+            posGround.y + groundScale.y * groundSize.y / 8, // 0
+            posGround.z + groundScale.z * groundSize.z / 8);
 
         minimumCoordinates = new Vector3(
-            posGround.x - groundScale.x * groundSize.x / 2,
-            posGround.y - groundScale.y * groundSize.y / 2, // 0
-            posGround.z - groundScale.z * groundSize.z / 2);
+            posGround.x - groundScale.x * groundSize.x / 8,
+            posGround.y - groundScale.y * groundSize.y / 8, // 0
+            posGround.z - groundScale.z * groundSize.z / 8);
 
         // I've assumed that the Ground object isn't rotated
         // In case of rotating it, we'll be forced to do some fancy maths
@@ -62,6 +62,11 @@ public class Forestation : MonoBehaviour
         {
             var tree = new Tree(path, name);
             tree.prefab.transform.position = new Vector3(0.0f, -tree.size.y, 0.0f);
+            tree.prefab.transform.localScale = new Vector3(
+                tree.prefab.transform.localScale.x / 8,
+                tree.prefab.transform.localScale.y / 8,
+                tree.prefab.transform.localScale.z / 8
+            );
             trees.Add(tree);
         }
     }
@@ -91,9 +96,9 @@ public class Forestation : MonoBehaviour
         foreach (var tree in trees)
         {
             if (tree.size.x > maxSize.x)
-                maxSize.x = tree.size.x;
+                maxSize.x = tree.size.x / 8;
             if (tree.size.z > maxSize.z)
-                maxSize.z = tree.size.z;
+                maxSize.z = tree.size.z / 8;
         }
         // Calculate step and offset
         float xStep = maxSize.x + gap;
@@ -108,7 +113,7 @@ public class Forestation : MonoBehaviour
                 var tree = Instantiate(trees[Random.Range(0, trees.Count)].prefab);
                 tree.transform.position = new Vector3(
                     x + Random.Range(-maxRandomOffset, maxRandomOffset),
-                    Random.Range(minimumCoordinates.y, maximumCoordinates.y) + 0.5f, 
+                    Random.Range(minimumCoordinates.y, maximumCoordinates.y) + 0.5f,
                     z + Random.Range(-maxRandomOffset, maxRandomOffset));
             }
         }
@@ -128,9 +133,9 @@ public class Forestation : MonoBehaviour
         // Calculate radius and generate points using Poisson disk sampling
         float radius = (maxSize.magnitude + gap) * 0.5f;
         List<Vector2> points = PoissonDiskSampling.GeneratePoints(
-            radius, 
+            radius,
             new Vector2(
-                maximumCoordinates.x - minimumCoordinates.x - 2 * minimumDistanceFromTheEdge, 
+                maximumCoordinates.x - minimumCoordinates.x - 2 * minimumDistanceFromTheEdge,
                 maximumCoordinates.z - minimumCoordinates.z - 2 * minimumDistanceFromTheEdge),
             numSamplesBeforeRejection);
         // Place trees at the generated points
@@ -151,8 +156,8 @@ public class Forestation : MonoBehaviour
         // LoadSingleTree();
         LoadTrees(Application.dataPath + "/Resources/ForestObjects", new List<string> { "EU43_5" });
         // PlaceTreesRandom(10);
-        // PlaceTreesGrid(5.0f, 3.0f);
-        PlaceTreesPoisson(5.0f, 25);
+        PlaceTreesGrid(2f, 0.15f);
+        // PlaceTreesPoisson(25.0f, 5);
     }
 
     // Update is called once per frame

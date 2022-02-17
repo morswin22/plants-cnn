@@ -46,15 +46,15 @@ public class Render : MonoBehaviour
         sunComponent.SetLocation(ranges["latitude"].Random(), ranges["longitude"].Random());
 
         // Generate random camera position
-        var newPosition = new Vector3(ranges["x"].Random(), ranges["y"].Random(), ranges["z"].Random());
-        var newLookAt = new Vector3(ranges["x"].Random(), 1.0f, ranges["z"].Random());
+        // var newPosition = new Vector3(ranges["x"].Random(), ranges["y"].Random(), ranges["z"].Random());
+        // var newLookAt = new Vector3(ranges["x"].Random(), 1.0f, ranges["z"].Random());
 
-        // Update cameras
-        foreach (GameObject camera in cameras)
-        {
-            camera.transform.position = newPosition;
-            camera.transform.LookAt(newLookAt);
-        }
+        // // Update cameras
+        // foreach (GameObject camera in cameras)
+        // {
+        //     camera.transform.position = newPosition;
+        //     camera.transform.LookAt(newLookAt);
+        // }
     }
 
     void RenderToFile()

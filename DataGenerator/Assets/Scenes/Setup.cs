@@ -47,6 +47,8 @@ public class Setup : MonoBehaviour
         ground.name = "Ground";
         ground.GetComponent<MeshRenderer>().material = groundMaterial;
         ground.AddComponent<Forestation>();
+        
+        mainCamera.AddComponent<CameraBehaviour>();
 
     }
 

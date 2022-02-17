@@ -9,13 +9,13 @@ public class Forestation : MonoBehaviour
     GameObject sp;
     GameObject ground;
     List<Tree> trees = new List<Tree>();
-    List<GameObject> placedTrees = new List<GameObject>();
+    public List<GameObject> placedTrees = new List<GameObject>();
     Vector3 maximumCoordinates;
     Vector3 minimumCoordinates;
     public float minimumDistanceFromTheEdge = 5;
     public float treesAreaScale = 1f/8f;
     public float treesSizeScale = 1f/8f;
-    public float treesSinkAmount = -1.0f;
+    public float treesSinkAmount = 1.0f;
 
     void GetEdgesOfTheWorld()
     {
@@ -217,7 +217,8 @@ public class Forestation : MonoBehaviour
     {
         GetEdgesOfTheWorld();
         // LoadSingleTree();
-        LoadTrees(Application.dataPath + "/Resources/ForestObjects", new List<string> { "EU43_5" });
+        // LoadTrees(Application.dataPath + "/Resources/ForestObjects", new List<string> { "EU43_5" });
+        LoadTrees(Application.dataPath + "/Resources/ForestObjects", new List<string> { "OC12_4"});
         // PlaceTreesRandom(10);
         // PlaceTreesGrid(2f, 0.15f);
         PlaceTreesGrid(3, 9, 0.15f);

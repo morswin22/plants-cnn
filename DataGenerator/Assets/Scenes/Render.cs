@@ -6,7 +6,7 @@ using System.IO;
 public class Render : MonoBehaviour
 {
     GameObject sun;
-    GameObject[] cameras;
+    CameraBehaviour cameraBehaviourComponent;
     Camera textureCameraComponent;
     Entropedia.Sun sunComponent;
     public int screenshotsPerSecond = 3;
@@ -18,7 +18,7 @@ public class Render : MonoBehaviour
         sun = GameObject.Find("Sun");
         sunComponent = sun.GetComponent<Entropedia.Sun>();
 
-        cameras = GameObject.FindGameObjectsWithTag("Camera");
+        cameraBehaviourComponent = GameObject.Find("Main Camera").GetComponent<CameraBehaviour>();
         textureCameraComponent = GameObject.Find("Texture Camera").GetComponent<Camera>();
 
         // time
@@ -29,13 +29,6 @@ public class Render : MonoBehaviour
         ranges["latitude"] = new Range(-90.0f, 90.0f);
         ranges["longitude"] = new Range(-180.0f, 180.0f);
 
-        // camera
-        ranges["x"] = new Range(-50.0f, 50.0f);
-        ranges["y"] = new Range( 15.0f, 25.0f);
-        ranges["z"] = new Range(-50.0f, 50.0f);
-
-        // TODO: Add camera angle range
-
         StartCoroutine("Capture");
     }
 
@@ -45,16 +38,8 @@ public class Render : MonoBehaviour
         sunComponent.SetTime((int)ranges["hour"].Random(), (int)ranges["minute"].Random());
         sunComponent.SetLocation(ranges["latitude"].Random(), ranges["longitude"].Random());
 
-        // Generate random camera position
-        // var newPosition = new Vector3(ranges["x"].Random(), ranges["y"].Random(), ranges["z"].Random());
-        // var newLookAt = new Vector3(ranges["x"].Random(), 1.0f, ranges["z"].Random());
-
-        // // Update cameras
-        // foreach (GameObject camera in cameras)
-        // {
-        //     camera.transform.position = newPosition;
-        //     camera.transform.LookAt(newLookAt);
-        // }
+        // Update camera
+        cameraBehaviourComponent.FocusCameraOnRandomTree();
     }
 
     void RenderToFile()
@@ -83,6 +68,7 @@ public class Render : MonoBehaviour
 
     IEnumerator Capture()
     {
+        yield return new WaitForEndOfFrame(); // Skip first frame
         while (true)
         {
             // Randomize scene

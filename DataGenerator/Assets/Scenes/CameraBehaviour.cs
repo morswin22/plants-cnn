@@ -21,11 +21,11 @@ public class CameraBehaviour : MonoBehaviour
                 x.transform.LookAt(lookAt);
             });
     }
+
     double GetRandomDoubleInRage(double minimum, double maximum)
     {
         return rnd.NextDouble() * (maximum - minimum) + minimum;
     }
-
 
     GameObject GetRandomTree()
     {
@@ -43,9 +43,10 @@ public class CameraBehaviour : MonoBehaviour
     }
     #endregion
 
-
-    void FocusCameraOnRandomTree()
+    public void FocusCameraOnRandomTree()
     {
+        if (trees == null || trees.Count == 0)
+            return;
         var tree = GetRandomTree();
         var treePosition = tree.transform.position;
         var treeHeight = tree.transform.lossyScale.y / 2;
@@ -58,13 +59,12 @@ public class CameraBehaviour : MonoBehaviour
     {
         cameras = GameObject.FindGameObjectsWithTag("Camera").ToList();
         textureCameraComponent = GameObject.Find("Texture Camera").GetComponent<Camera>();
-        forestation = (Forestation)GameObject.Find("Ground").GetComponent("Forestation");
+        forestation = GameObject.Find("Ground").GetComponent<Forestation>();
         trees = forestation.placedTrees;
     }
 
     // Update is called once per frame
     void Update()
     {
-        FocusCameraOnRandomTree();
     }
 }
